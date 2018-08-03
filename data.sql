@@ -1,5 +1,9 @@
 
 <!-- DROP TABLE IF EXITS -- >
+DROP DATABASE IF EXISTS scheduler_db;
+
+CREATE DATABASE scheduler_db;
+<!-- DROP TABLE IF EXITS -- >
 DROP TABLE IF EXISTS engineer_entity;
 
 <!--CREATE TABLE Engineer_entity-- >
