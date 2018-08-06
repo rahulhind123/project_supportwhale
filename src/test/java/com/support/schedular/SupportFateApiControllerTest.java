@@ -1,9 +1,10 @@
-package com.support.schedular.supportwheeloffatedemo;
+package com.support.schedular;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -28,15 +29,16 @@ public class SupportFateApiControllerTest {
     
     @MockBean
     private ScheduleService scheduleService;
-    
-    
-    @Ignore
+        
+    @Test
     public void generateScheduleTest() throws Exception {
         
-        String jsonMock = "{\"startDate\":\"2018-03-10\", \"endDate\":\"2018-03-25\"}";
+        String inputMock = "{\"startDate\":\"2018-03-10\", \"endDate\":\"2018-03-25\"}";
         
-		RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/generate_schedule")
-				.accept(MediaType.APPLICATION_FORM_URLENCODED).param(jsonMock).contentType(MediaType.APPLICATION_JSON);
+        Mockito.when(scheduleService.generateSchedules(Mockito.anyString(), Mockito.anyString())).thenReturn(Mockito.any());
+        
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/generate_schedule")
+				.accept(MediaType.APPLICATION_JSON).content(inputMock).contentType(MediaType.APPLICATION_JSON);
 
 		MvcResult result = mockMVC.perform(requestBuilder).andReturn();
 		MockHttpServletResponse  response = result.getResponse();
