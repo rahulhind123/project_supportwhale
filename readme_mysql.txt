@@ -9,7 +9,7 @@ MySql  5.0.6
 Application
 ++++++++++++++++++++++
 Application structure is based on Controller -> Service -> Repository pattern. 
-My Sql database is used and sample data is preloaded from 'data.sql' file in classpath on application start.
+My Sql database is used and sample data is preloaded from 'sql/mysql_b_data.sql' file in classpath on application start.
 
 
 ++++++++++++++++++++++
@@ -42,13 +42,13 @@ Build and Run
 ++++++++++++++++++++++
 Maven is used for dependencies and project build.
 
-To build the project run following maven command
-mvn clean package
+Maven is used for dependencies and project build.
 
-Exceute following command to run the application
-mvn spring-boot:run
+Go to jars folder and execute following command to run  the application
+
+java -jar mysql_db_assignment.jar
 
 Open the following URL in browser
 localhost:9091/
 
-Note: The default port set for this application is 9090 in application.properties file. Web server in the application will start on port 9090
+Note: The default port set for this application is 9091 in application.properties file. Web server in the application will start on port 9091

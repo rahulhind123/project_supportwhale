@@ -53,8 +53,8 @@ Build and Run
 ++++++++++++++++++++++
 Maven is used for dependencies and project build.
 
-Exceute following command to run the application
-Go to jars folder and run following command
+Go to jars folder and execute following command to run  the application
+
 java -jar h2_db_assignment.jar
 
 Open the following URL in browser
