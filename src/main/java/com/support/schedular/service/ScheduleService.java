@@ -1,5 +1,6 @@
 package com.support.schedular.service;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import com.support.schedular.constant.ApplicationConstant;
 import com.support.schedular.entities.EngineerEntity;
+import com.support.schedular.exception.ScheduleGenerationException;
 import com.support.schedular.repository.EngineerRepository;
 import com.support.schedular.util.ApplicationUtilities;
 import com.support.schedular.validator.MaxOneShiftAllocationValidtor;
@@ -43,8 +45,13 @@ public class ScheduleService {
 
 	public Map<Date, Map<List<EngineerEntity>, Integer>> generateSchedules(String startDate, String endDate) throws Exception{
 
-			fromDate = ApplicationUtilities.parseDate(startDate);
-			toDate = ApplicationUtilities.parseDate(endDate);
+		   try{
+				fromDate = ApplicationUtilities.parseDate(startDate);
+				toDate = ApplicationUtilities.parseDate(endDate);
+		   }catch(ParseException e){
+			   throw new RuntimeException("InValid date format");
+		   }
+		
 			
 			int workingInterval = (applicationConstant.getMax_engineer_allocation() * applicationConstant.getMax_engineer_shift())/applicationConstant.getMax_day_shift();
 			logger.info("Working Interval {} ",workingInterval);
@@ -64,12 +71,18 @@ public class ScheduleService {
 			 */
 			
 			List<EngineerEntity> engineersPool = this.engineerRespository.findAll();
+			if(engineersPool.size() <1){
+				 throw new RuntimeException(" No Engineer Records available");
+			}
 			
 			for (Date workDate : workingDates) {
 				dataEngineerMap = this.validateEngineer(engineersPool, dataEngineerMap ,workDate,this.getRuleCheckerList()) ;
 			}
 
 			logger.info("dataEngineerMap {} ", dataEngineerMap);
+			if(dataEngineerMap == null){
+				throw new ScheduleGenerationException(" Unable to schedule ||| May be NO engineer in the records");
+			}
 			
 			return dataEngineerMap;
 		
