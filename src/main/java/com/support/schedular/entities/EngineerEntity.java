@@ -7,17 +7,16 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
-public class EngineerEntity {
-	
+public class EngineerEntity implements Cloneable {
 
-	@Id @GeneratedValue(strategy = GenerationType.AUTO)
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	
-	@Column(name="engineer_name")
-	private String name;
-	
-	private int shiftNumber;
 
+	@Column(name = "engineer_name")
+	private String name;
+
+	private int shiftNumber;
 
 	public int getShiftNumber() {
 		return shiftNumber;
@@ -42,22 +41,30 @@ public class EngineerEntity {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-	
-	@Override
-	public boolean equals(Object other){
-	    if (!(other instanceof EngineerEntity))
-	        return false;
-	    EngineerEntity engineer = (EngineerEntity) other;
-	    return (this.id==engineer.id) && 
-	           (this.getName().equals(engineer.getName()));
+
+//	@Override
+//	public boolean equals(Object other) {
+//		if (!(other instanceof EngineerEntity))
+//			return false;
+//		EngineerEntity engineer = (EngineerEntity) other;
+//		return (this.id == engineer.id)
+//				&& (this.getName().equals(engineer.getName()));
+//	}
+
+	public EngineerEntity clone() {
+		EngineerEntity cloneEmpEntity = null;
+		try {
+			cloneEmpEntity = (EngineerEntity) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e); 
+		}
+		return cloneEmpEntity;
 	}
 
 	@Override
 	public String toString() {
-		return "EngineerEntity [id=" + id + ", name=" + name + ", shiftNumber="+ shiftNumber + "]";
+		return "EngineerEntity [id=" + id + ", name=" + name + ", shiftNumber="
+				+ shiftNumber + "]";
 	}
-	
 
-	
 }

@@ -19,11 +19,10 @@ import org.springframework.stereotype.Service;
 import com.support.schedular.constant.ApplicationConstant;
 import com.support.schedular.entities.EngineerEntity;
 import com.support.schedular.exception.ScheduleGenerationException;
+import com.support.schedular.pool.EngineerPool;
 import com.support.schedular.repository.EngineerRepository;
 import com.support.schedular.util.ApplicationUtilities;
-import com.support.schedular.validator.MaxOneShiftAllocationValidtor;
-import com.support.schedular.validator.MaxShiftAllocationValidator;
-import com.support.schedular.validator.NoConsecutiveAllocationValidator;
+import com.support.schedular.validator.EngineerSelectionCriteria;
 import com.support.schedular.validator.RuleChecker;
 
 @Service
@@ -36,7 +35,13 @@ public class ScheduleService {
 	
 	@Autowired
 	private EngineerRepository engineerRespository;
-
+	
+	@Autowired
+	private EngineerPool engineerPool;
+	
+	@Autowired
+	private EngineerSelectionCriteria engineerRules;
+ 
 	// assigned userDate to local variable
 	private Date fromDate , toDate;
 	private List<Date> workingDates ;
@@ -56,7 +61,10 @@ public class ScheduleService {
 			int workingInterval = (applicationConstant.getMax_engineer_allocation() * applicationConstant.getMax_engineer_shift())/applicationConstant.getMax_day_shift();
 			logger.info("Working Interval {} ",workingInterval);
 			
-			workingDates = ApplicationUtilities.calculateWorkingDays(fromDate, toDate ,workingInterval);
+			workingDates = ApplicationUtilities.calculateWorkingDays(fromDate, toDate);
+			if(workingDates.size() != workingInterval){
+				throw new RuntimeException("Please select " + workingInterval + " working dates ");
+			}
 			dataEngineerMap = new TreeMap<Date, Map<List<EngineerEntity>, Integer>>();
 			
 			
@@ -70,18 +78,18 @@ public class ScheduleService {
 			 * in mind max shift allocation for one engineer is 2 in 2 weeks
 			 */
 			
-			List<EngineerEntity> engineersPool = this.engineerRespository.findAll();
+			List<EngineerEntity> engineersPool = this.engineerPool.clone();
 			if(engineersPool.size() <1){
 				 throw new RuntimeException(" No Engineer Records available");
 			}
 			
 			for (Date workDate : workingDates) {
-				dataEngineerMap = this.validateEngineer(engineersPool, dataEngineerMap ,workDate,this.getRuleCheckerList()) ;
+				dataEngineerMap = this.validateEngineer(engineersPool, dataEngineerMap ,workDate,engineerRules.getRuleCheckerList()) ;
 			}
 
 			logger.info("dataEngineerMap {} ", dataEngineerMap);
 			if(dataEngineerMap == null){
-				throw new ScheduleGenerationException(" Unable to schedule ||| May be NO engineer in the records");
+				throw new ScheduleGenerationException(" Getting Schedular Exception .. May be wrong input given");
 			}
 			
 			return dataEngineerMap;
@@ -155,13 +163,5 @@ public class ScheduleService {
 		  
 	}
 	
-	public List<RuleChecker> getRuleCheckerList(){
-		
-		List<RuleChecker> ruleList = new ArrayList<RuleChecker>();
-		ruleList.add(new MaxOneShiftAllocationValidtor());
-		ruleList.add(new MaxShiftAllocationValidator());
-		ruleList.add(new NoConsecutiveAllocationValidator());
-		
-		return ruleList;
-	}
+
 }

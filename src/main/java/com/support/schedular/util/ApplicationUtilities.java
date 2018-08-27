@@ -24,7 +24,7 @@ public class ApplicationUtilities {
         return sdf.format(date);
     }
 	
-	public static List<Date> calculateWorkingDays(Date fromDate , Date toDate , int workingInterval) {
+	public static List<Date> calculateWorkingDays(Date fromDate , Date toDate) {
 		
 		List<Date> workingDates = new ArrayList<Date>();
 		Calendar startDateCalendar = Calendar.getInstance();
@@ -37,7 +37,7 @@ public class ApplicationUtilities {
 		
 		
 		
-		while(startDateCalendar.getTimeInMillis() < endDateCalendar.getTimeInMillis() && workingDates.size() < workingInterval ){
+		while(startDateCalendar.getTimeInMillis() < endDateCalendar.getTimeInMillis() ){
 			startDateCalendar.add(Calendar.DAY_OF_MONTH, 1);
 			if(startDateCalendar.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY && startDateCalendar.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY){
 				workingDates.add(startDateCalendar.getTime());
